@@ -1,0 +1,123 @@
+/**
+ * TerminalPanel 终端面板组件样式
+ * 暗色主题，与应用整体风格一致
+ */
+
+/* 终端面板容器 */
+.terminal-panel-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #1e1e1e;
+  color: #cccccc;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 终端渲染区域 */
+.terminal-panel-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* xterm.js 容器 */
+.terminal-xterm-container {
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+}
+
+/* 终端覆盖层（退出信息、错误提示等） */
+.terminal-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background-color: rgba(30, 30, 30, 0.92);
+  border-top: 1px solid #3c3c3c;
+  font-size: 13px;
+  z-index: 10;
+}
+
+/* 正常退出提示 */
+.terminal-overlay.exit-normal {
+  color: #89d185;
+}
+
+/* 异常退出提示 */
+.terminal-overlay.exit-abnormal {
+  color: #f48771;
+}
+
+/* 错误提示 */
+.terminal-overlay.error {
+  color: #f48771;
+}
+
+/* 重启按钮 */
+.terminal-restart-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background-color: #0e639c;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.terminal-restart-btn:hover {
+  background-color: #1177bb;
+}
+
+.terminal-restart-btn:active {
+  background-color: #0d5689;
+}
+
+/* Toast 提示（终端数量上限等） */
+.terminal-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background-color: #5a1d1d;
+  border: 1px solid #be1100;
+  color: #f48771;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 13px;
+  max-width: 480px;
+  text-align: center;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.terminal-toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* 空状态引导提示 */
+.terminal-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666666;
+  font-size: 14px;
+  text-align: center;
+  padding: 24px;
+}

@@ -1,0 +1,357 @@
+/**
+ * TerminalTypeSelector 终端类型选择组件样式
+ * 暗色主题，包含下拉菜单和设置面板
+ */
+
+/* ===== 下拉菜单触发按钮 ===== */
+.terminal-type-selector {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.terminal-type-selector-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background-color: #3c3c3c;
+  border: 1px solid #555555;
+  border-radius: 3px;
+  color: #cccccc;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.terminal-type-selector-trigger:hover {
+  background-color: #454545;
+  border-color: #666666;
+}
+
+.terminal-type-selector-trigger:active {
+  background-color: #505050;
+}
+
+.terminal-type-selector-trigger-icon {
+  font-size: 12px;
+}
+
+.terminal-type-selector-trigger-label {
+  font-size: 12px;
+}
+
+.terminal-type-selector-trigger-arrow {
+  font-size: 10px;
+  margin-left: 2px;
+  transition: transform 0.15s ease;
+}
+
+.terminal-type-selector-trigger-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* ===== 下拉菜单 ===== */
+.terminal-type-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  min-width: 180px;
+  background-color: #252526;
+  border: 1px solid #3c3c3c;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  overflow: hidden;
+  display: none;
+}
+
+.terminal-type-dropdown.visible {
+  display: block;
+}
+
+/* 下拉菜单项 */
+.terminal-type-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #cccccc;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.terminal-type-dropdown-item:hover {
+  background-color: #094771;
+}
+
+.terminal-type-dropdown-item.disabled {
+  color: #666666;
+  cursor: not-allowed;
+}
+
+.terminal-type-dropdown-item.disabled:hover {
+  background-color: transparent;
+}
+
+.terminal-type-dropdown-item-icon {
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.terminal-type-dropdown-item-name {
+  flex: 1;
+}
+
+.terminal-type-dropdown-item-badge {
+  font-size: 10px;
+  color: #888888;
+  padding: 1px 4px;
+  border-radius: 2px;
+  background-color: #3c3c3c;
+}
+
+.terminal-type-dropdown-item.disabled .terminal-type-dropdown-item-badge {
+  color: #555555;
+  background-color: #2d2d2d;
+}
+
+/* 下拉菜单分隔线 */
+.terminal-type-dropdown-divider {
+  height: 1px;
+  background-color: #3c3c3c;
+  margin: 4px 0;
+}
+
+/* 设置入口按钮 */
+.terminal-type-dropdown-settings {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #969696;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.terminal-type-dropdown-settings:hover {
+  background-color: #094771;
+  color: #cccccc;
+}
+
+/* ===== 设置面板（模态） ===== */
+.terminal-type-settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.terminal-type-settings-overlay.visible {
+  display: flex;
+}
+
+.terminal-type-settings-panel {
+  width: 480px;
+  max-height: 80vh;
+  background-color: #252526;
+  border: 1px solid #3c3c3c;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 设置面板头部 */
+.terminal-type-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #3c3c3c;
+  flex-shrink: 0;
+}
+
+.terminal-type-settings-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.terminal-type-settings-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  font-size: 16px;
+  color: #cccccc;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.terminal-type-settings-close:hover {
+  background-color: #505050;
+}
+
+/* 设置面板内容 */
+.terminal-type-settings-body {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* 默认终端类型选择 */
+.terminal-type-settings-section {
+  margin-bottom: 20px;
+}
+
+.terminal-type-settings-section-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #cccccc;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.terminal-type-settings-default-select {
+  width: 100%;
+  padding: 6px 10px;
+  background-color: #3c3c3c;
+  border: 1px solid #555555;
+  border-radius: 3px;
+  color: #cccccc;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+
+.terminal-type-settings-default-select:focus {
+  border-color: #007acc;
+}
+
+/* 路径配置项 */
+.terminal-type-settings-path-item {
+  margin-bottom: 12px;
+  padding: 10px;
+  background-color: #2d2d2d;
+  border-radius: 4px;
+  border: 1px solid #3c3c3c;
+}
+
+.terminal-type-settings-path-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #cccccc;
+  margin-bottom: 6px;
+}
+
+.terminal-type-settings-path-label-icon {
+  font-size: 12px;
+}
+
+.terminal-type-settings-path-input-row {
+  display: flex;
+  gap: 6px;
+}
+
+.terminal-type-settings-path-input {
+  flex: 1;
+  padding: 5px 8px;
+  background-color: #1e1e1e;
+  border: 1px solid #3c3c3c;
+  border-radius: 3px;
+  color: #cccccc;
+  font-size: 12px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  outline: none;
+}
+
+.terminal-type-settings-path-input:focus {
+  border-color: #007acc;
+}
+
+.terminal-type-settings-path-input.invalid {
+  border-color: #f44747;
+}
+
+.terminal-type-settings-path-input.valid {
+  border-color: #4ec9b0;
+}
+
+/* 验证状态提示 */
+.terminal-type-settings-path-status {
+  font-size: 11px;
+  margin-top: 4px;
+  min-height: 16px;
+}
+
+.terminal-type-settings-path-status.error {
+  color: #f44747;
+}
+
+.terminal-type-settings-path-status.success {
+  color: #4ec9b0;
+}
+
+/* 设置面板底部按钮 */
+.terminal-type-settings-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #3c3c3c;
+  flex-shrink: 0;
+}
+
+.terminal-type-settings-btn {
+  padding: 6px 14px;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease;
+}
+
+.terminal-type-settings-btn-cancel {
+  background-color: #3c3c3c;
+  color: #cccccc;
+  border-color: #555555;
+}
+
+.terminal-type-settings-btn-cancel:hover {
+  background-color: #454545;
+}
+
+.terminal-type-settings-btn-save {
+  background-color: #007acc;
+  color: #ffffff;
+}
+
+.terminal-type-settings-btn-save:hover {
+  background-color: #0098ff;
+}
+
+.terminal-type-settings-btn-save:disabled {
+  background-color: #3c3c3c;
+  color: #666666;
+  cursor: not-allowed;
+}

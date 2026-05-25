@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal Launcher</title>
+</head>
+<body>
+  <div class="welcome-container">
+    <!-- 标题区域 -->
+    <div class="welcome-header">
+      <h1>Terminal Launcher</h1>
+      <p>选择一个文件夹开始工作</p>
+    </div>
+
+    <!-- 打开文件夹按钮 -->
+    <button class="open-folder-btn" id="openFolderBtn">
+      <span class="icon">📂</span>
+      <span>打开文件夹</span>
+    </button>
+
+    <!-- 最近打开的文件夹列表 -->
+    <div class="recent-section">
+      <h2>最近打开</h2>
+      <ul class="recent-list" id="recentList">
+        <li class="loading-state">加载中...</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 错误提示 Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- 页面逻辑脚本 -->
+  <script type="module" src="./welcome.ts"></script>
+</body>
+</html>

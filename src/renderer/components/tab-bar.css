@@ -1,0 +1,122 @@
+/**
+ * TabBar 标签栏组件样式
+ * 暗色主题，与目录树组件风格一致
+ */
+
+.tab-bar-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #252526;
+  border-bottom: 1px solid #3c3c3c;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* 标签列表区域 */
+.tab-bar-list {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 35px;
+}
+
+/* 标签列表滚动条 */
+.tab-bar-list::-webkit-scrollbar {
+  height: 3px;
+}
+
+.tab-bar-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tab-bar-list::-webkit-scrollbar-thumb {
+  background-color: #424242;
+  border-radius: 2px;
+}
+
+.tab-bar-list::-webkit-scrollbar-thumb:hover {
+  background-color: #555555;
+}
+
+/* 单个标签页 */
+.tab-bar-tab {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  height: 35px;
+  min-width: 80px;
+  max-width: 180px;
+  background-color: #2d2d2d;
+  border-right: 1px solid #3c3c3c;
+  cursor: pointer;
+  font-size: 12px;
+  color: #969696;
+  white-space: nowrap;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.tab-bar-tab:hover {
+  background-color: #323232;
+  color: #cccccc;
+}
+
+/* 激活状态的标签 */
+.tab-bar-tab.active {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border-bottom: 2px solid #007acc;
+}
+
+.tab-bar-tab.active .tab-bar-tab-close {
+  opacity: 1;
+}
+
+/* 终端类型图标 */
+.tab-bar-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* 标签标题 */
+.tab-bar-tab-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  line-height: 35px;
+}
+
+/* 关闭按钮 */
+.tab-bar-tab-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  border-radius: 3px;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0;
+  color: #cccccc;
+  flex-shrink: 0;
+  transition: opacity 0.1s ease, background-color 0.1s ease;
+}
+
+.tab-bar-tab:hover .tab-bar-tab-close {
+  opacity: 1;
+}
+
+.tab-bar-tab-close:hover {
+  background-color: #505050;
+  color: #ffffff;
+}
