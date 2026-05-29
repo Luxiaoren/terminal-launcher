@@ -1,4 +1,4 @@
-# Terminal Launcher
+# Foldim
 
 一个轻量级 Windows 桌面终端管理工具，基于 Electron + xterm.js + node-pty 构建。
 
@@ -22,14 +22,14 @@
 
 ### 下载使用
 
-从 [Releases](../../releases) 页面下载最新的 zip 包，解压后双击 `Terminal Launcher.exe` 即可运行。
+从 [Releases](../../releases) 页面下载最新的 zip 包，解压后双击 `Foldim.exe` 即可运行。
 
 ### 从源码构建
 
 ```bash
 # 克隆仓库
-git clone https://github.com/Luxiaoren/terminal-launcher.git
-cd terminal-launcher
+git clone https://github.com/Luxiaoren/foldim.git
+cd foldim
 
 # 安装依赖
 npm install

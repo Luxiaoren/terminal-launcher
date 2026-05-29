@@ -1,39 +1,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { FolderEntry, AccessCheckResult } from '../shared/types';
+import { compareFolderNames } from '../shared/sort-utils';
+
+// 重新导出，保持向后兼容（既有测试从本模块导入 compareFolderNames）
+export { compareFolderNames };
 
 /**
  * 单层最多返回的文件夹条目数量
  */
 const MAX_FOLDER_ENTRIES = 1000;
-
-/**
- * 判断字符是否为 ASCII 字母
- */
-function isAsciiLetter(char: string): boolean {
-  const code = char.charCodeAt(0);
-  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
-}
-
-/**
- * 文件夹名称排序比较函数
- * 规则：不区分大小写字典序，英文字母优先于中文字符
- *
- * 排序逻辑：
- * 1. 如果两个名称首字符类型相同（都是英文或都是非英文），按 localeCompare 不区分大小写排序
- * 2. 如果首字符类型不同，英文字母开头的排在前面
- */
-export function compareFolderNames(a: string, b: string): number {
-  const aIsAscii = a.length > 0 && isAsciiLetter(a[0]);
-  const bIsAscii = b.length > 0 && isAsciiLetter(b[0]);
-
-  // 英文字母开头的排在中文字符开头的前面
-  if (aIsAscii && !bIsAscii) return -1;
-  if (!aIsAscii && bIsAscii) return 1;
-
-  // 同类型按不区分大小写字典序排列
-  return a.localeCompare(b, undefined, { sensitivity: 'base' });
-}
 
 /**
  * 对话框提供者接口

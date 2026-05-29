@@ -1,4 +1,4 @@
-# Implementation Plan: Terminal Launcher
+# Implementation Plan: Foldim
 
 ## Overview
 

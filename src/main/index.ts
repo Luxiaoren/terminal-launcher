@@ -9,7 +9,7 @@ import { TerminalTypeResolver } from './terminal-type-resolver';
 import { registerIpcHandlers, IPtyManager } from './ipc-handlers';
 
 /**
- * Terminal Launcher 主进程入口
+ * Foldim 主进程入口
  * 负责应用生命周期管理、窗口创建和模块初始化
  */
 
@@ -143,6 +143,7 @@ function createWindow(): void {
     y: windowState.y,
     width: windowState.width,
     height: windowState.height,
+    icon: path.join(getAppDir(), 'build/icon.png'),
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
@@ -257,6 +258,16 @@ function createAppMenu(): void {
         },
         { type: 'separator' },
         {
+          label: '开发者工具',
+          accelerator: 'F12',
+          click: () => {
+            if (mainWindow) {
+              mainWindow.webContents.toggleDevTools();
+            }
+          }
+        },
+        { type: 'separator' },
+        {
           label: '退出',
           accelerator: 'CmdOrCtrl+Q',
           click: () => app.quit(),
@@ -283,32 +294,29 @@ app.whenReady().then(() => {
   createAppMenu();
 });
 
-// 所有窗口关闭时：保存状态、清理终端、退出应用
-app.on('window-all-closed', async () => {
-  try {
-    // 保存窗口状态
-    await windowManager.saveState();
-  } catch {
-    // 保存失败时静默处理，不阻止退出
-  }
+// 标记是否已完成清理，避免 before-quit 重复触发清理逻辑
+let cleanedUp = false;
 
-  try {
-    // 销毁所有终端进程，释放资源
-    await ptyManager.destroyAll();
-  } catch {
-    // 清理失败时静默处理，不阻止退出
-  }
-
-  app.quit();
+/**
+ * 应用退出前的最终清理
+ * 通过 preventDefault + 异步清理 + 重新 quit 的模式，
+ * 确保 PTY 子进程在主进程退出前被完全终止
+ */
+app.on('before-quit', (event) => {
+  if (cleanedUp) return; // 第二次进入：已清理，放行
+  event.preventDefault();
+  // 窗口状态已在 window 'close' 事件中保存，这里只清理 PTY
+  ptyManager.destroyAll().catch(() => {
+    // 静默处理，确保即使部分清理失败也能退出
+  }).finally(() => {
+    cleanedUp = true;
+    app.quit();
+  });
 });
 
-// 应用退出前的最终清理（确保终端进程被清理）
-app.on('before-quit', async () => {
-  try {
-    await ptyManager.destroyAll();
-  } catch {
-    // 静默处理
-  }
+// 所有窗口关闭时：触发应用退出（before-quit 会负责清理）
+app.on('window-all-closed', () => {
+  app.quit();
 });
 
 // ===== 全局错误处理 =====

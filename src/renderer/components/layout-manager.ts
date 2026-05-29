@@ -29,6 +29,12 @@ export class LayoutManager {
   private isDragging: boolean = false;
   /** 布局变化回调 */
   private onLayoutChangeCallback: ((config: LayoutConfig) => void) | null = null;
+  /** 全局鼠标移动监听器（保留引用以便组件销毁时移除） */
+  private mouseMoveHandler: (e: MouseEvent) => void;
+  /** 全局鼠标释放监听器（保留引用以便组件销毁时移除） */
+  private mouseUpHandler: () => void;
+  /** 全局键盘监听器（保留引用以便组件销毁时移除） */
+  private keyDownHandler: (e: KeyboardEvent) => void;
 
   constructor(parentElement: HTMLElement) {
     // 创建根容器
@@ -57,6 +63,11 @@ export class LayoutManager {
     this.rightPanel.appendChild(this.guideEl);
 
     parentElement.appendChild(this.container);
+
+    // 初始化全局监听器引用（绑定后用于 add/remove）
+    this.mouseMoveHandler = (e: MouseEvent) => this.handleDividerMouseMove(e);
+    this.mouseUpHandler = () => this.handleDividerMouseUp();
+    this.keyDownHandler = (e: KeyboardEvent) => this.handleKeyDown(e);
 
     // 绑定分隔条拖拽事件
     this.bindDividerEvents();
@@ -162,6 +173,18 @@ export class LayoutManager {
     return this.splitRatio;
   }
 
+  /**
+   * 销毁组件，移除所有全局监听器
+   */
+  destroy(): void {
+    document.removeEventListener('mousemove', this.mouseMoveHandler);
+    document.removeEventListener('mouseup', this.mouseUpHandler);
+    document.removeEventListener('keydown', this.keyDownHandler);
+    if (this.container.parentElement) {
+      this.container.parentElement.removeChild(this.container);
+    }
+  }
+
   // ===== 私有方法 =====
 
   /**
@@ -176,14 +199,17 @@ export class LayoutManager {
    */
   private applyLayout(): void {
     if (this.terminalVisible) {
-      // 显示终端面板：左右分栏
+      // 显示终端面板：左侧固定百分比，右侧用 flex 填充剩余空间
       this.leftPanel.style.width = `${this.splitRatio}%`;
-      this.rightPanel.style.width = `${100 - this.splitRatio}%`;
+      this.leftPanel.style.flex = '0 0 auto';
+      this.rightPanel.style.width = '';
+      this.rightPanel.style.flex = '1 1 0';
       this.rightPanel.style.display = 'flex';
       this.divider.style.display = 'block';
     } else {
       // 隐藏终端面板：左侧全宽
       this.leftPanel.style.width = '100%';
+      this.leftPanel.style.flex = '0 0 auto';
       this.rightPanel.style.display = 'none';
       this.divider.style.display = 'none';
     }
@@ -200,35 +226,43 @@ export class LayoutManager {
       this.container.classList.add('dragging');
     });
 
-    // 鼠标移动更新比例
-    document.addEventListener('mousemove', (e: MouseEvent) => {
-      if (!this.isDragging) return;
-      e.preventDefault();
+    // 鼠标移动/释放使用成员引用，便于销毁时移除
+    document.addEventListener('mousemove', this.mouseMoveHandler);
+    document.addEventListener('mouseup', this.mouseUpHandler);
+  }
 
-      const containerRect = this.container.getBoundingClientRect();
-      const containerWidth = containerRect.width;
-      if (containerWidth === 0) return;
+  /**
+   * 拖拽过程中的鼠标移动处理
+   */
+  private handleDividerMouseMove(e: MouseEvent): void {
+    if (!this.isDragging) return;
+    e.preventDefault();
 
-      // 计算鼠标位置对应的左侧面板百分比
-      const mouseX = e.clientX - containerRect.left;
-      const newRatio = (mouseX / containerWidth) * 100;
+    const containerRect = this.container.getBoundingClientRect();
+    const containerWidth = containerRect.width;
+    if (containerWidth === 0) return;
 
-      // 钳制到 15%-85% 范围
-      this.splitRatio = this.clampRatio(newRatio);
-      this.applyLayout();
-    });
+    // 计算鼠标位置对应的左侧面板百分比
+    const mouseX = e.clientX - containerRect.left;
+    const newRatio = (mouseX / containerWidth) * 100;
 
-    // 鼠标释放结束拖拽
-    document.addEventListener('mouseup', () => {
-      if (!this.isDragging) return;
-      this.isDragging = false;
-      this.container.classList.remove('dragging');
+    // 钳制到 15%-85% 范围
+    this.splitRatio = this.clampRatio(newRatio);
+    this.applyLayout();
+  }
 
-      // 通知布局变化
-      if (this.onLayoutChangeCallback) {
-        this.onLayoutChangeCallback(this.saveLayout());
-      }
-    });
+  /**
+   * 拖拽结束的鼠标释放处理
+   */
+  private handleDividerMouseUp(): void {
+    if (!this.isDragging) return;
+    this.isDragging = false;
+    this.container.classList.remove('dragging');
+
+    // 通知布局变化
+    if (this.onLayoutChangeCallback) {
+      this.onLayoutChangeCallback(this.saveLayout());
+    }
   }
 
   /**
@@ -236,12 +270,17 @@ export class LayoutManager {
    * Ctrl+` 切换终端面板显隐
    */
   private bindKeyboardShortcuts(): void {
-    document.addEventListener('keydown', (e: KeyboardEvent) => {
-      // Ctrl+` 切换终端面板
-      if (e.ctrlKey && e.key === '`') {
-        e.preventDefault();
-        this.toggleTerminalPanel();
-      }
-    });
+    document.addEventListener('keydown', this.keyDownHandler);
+  }
+
+  /**
+   * 全局键盘事件处理
+   */
+  private handleKeyDown(e: KeyboardEvent): void {
+    // Ctrl+` 切换终端面板
+    if (e.ctrlKey && e.key === '`') {
+      e.preventDefault();
+      this.toggleTerminalPanel();
+    }
   }
 }

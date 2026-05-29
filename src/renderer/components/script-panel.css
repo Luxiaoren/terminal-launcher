@@ -5,11 +5,8 @@
 
 /* 脚本面板根容器 */
 .script-panel {
-  width: 280px;
-  min-width: 280px;
   height: 100%;
   background-color: #252526;
-  border-left: 1px solid #3c3c3c;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -229,4 +226,26 @@
   letter-spacing: 0.5px;
   border-top: 1px solid #3c3c3c;
   margin-top: 4px;
+}
+
+
+/* 脚本面板左侧的拖拽分隔条 */
+.script-panel-divider-bar {
+  width: 6px;
+  height: 100%;
+  background-color: #252526;
+  cursor: col-resize;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+  display: none;
+  position: relative;
+  z-index: 10;
+}
+
+.script-panel-divider-bar:hover {
+  background-color: #007acc;
+}
+
+.script-panel-divider-bar:active {
+  background-color: #007acc;
 }

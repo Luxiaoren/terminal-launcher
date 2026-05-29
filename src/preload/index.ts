@@ -24,6 +24,14 @@ const electronAPI = {
   onTerminalExit: (terminalId: string, callback: (code: number) => void) => {
     ipcRenderer.on(`${PTY_CHANNELS.EXIT}:${terminalId}`, (_event, code) => callback(code))
   },
+  /** 移除指定终端的数据监听器（关闭/重启终端时调用，避免内存泄漏） */
+  offTerminalData: (terminalId: string) => {
+    ipcRenderer.removeAllListeners(`${PTY_CHANNELS.DATA}:${terminalId}`)
+  },
+  /** 移除指定终端的退出监听器（关闭/重启终端时调用，避免内存泄漏） */
+  offTerminalExit: (terminalId: string) => {
+    ipcRenderer.removeAllListeners(`${PTY_CHANNELS.EXIT}:${terminalId}`)
+  },
 
   // 配置
   getConfig: () => ipcRenderer.invoke(CONFIG_CHANNELS.GET),

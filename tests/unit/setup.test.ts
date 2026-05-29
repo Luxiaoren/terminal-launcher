@@ -10,7 +10,7 @@ describe('项目初始化', () => {
   });
 
   it('TypeScript 类型系统正常工作', () => {
-    const value: string = 'Terminal Launcher';
-    expect(value).toBe('Terminal Launcher');
+    const value: string = 'Foldim';
+    expect(value).toBe('Foldim');
   });
 });

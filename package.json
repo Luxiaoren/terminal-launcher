@@ -1,5 +1,5 @@
 {
-  "name": "terminal-launcher",
+  "name": "foldim",
   "version": "1.0.0",
   "description": "轻量级 Windows 桌面终端管理工具",
   "main": "out/main/index.js",
@@ -31,13 +31,14 @@
     "node-pty": "^1.0.0"
   },
   "build": {
-    "appId": "com.terminal-launcher.app",
-    "productName": "Terminal Launcher",
+    "appId": "com.foldim.app",
+    "productName": "Foldim",
     "asar": true,
     "asarUnpack": [
       "node_modules/node-pty/**/*"
     ],
     "win": {
+      "icon": "build/icon.png",
       "target": [
         {
           "target": "zip",

@@ -61,11 +61,13 @@ async function init(): Promise<void> {
   const rightPanel = layoutManager.getRightPanel();
 
   // 右侧面板内部用 flex 横向布局：终端区域 | 脚本面板
-  rightPanel.style.cssText = 'display:flex; flex-direction:row; min-width:0;';
+  // 注意：display/min-width/overflow 已在 .layout-panel-right 类样式中设置，
+  // 这里只覆盖 flex-direction，避免清掉 LayoutManager 设置的 flex:1 1 0
+  rightPanel.style.flexDirection = 'row';
 
-  // 终端主区域容器（包含工具栏和终端内容）
+  // 终端主区域容器（包含工具栏和终端内容），用 flex:1 填充剩余空间
   const terminalAreaEl = document.createElement('div');
-  terminalAreaEl.style.cssText = 'flex:1; display:flex; flex-direction:column; min-width:0; overflow:hidden;';
+  terminalAreaEl.style.cssText = 'flex:1 1 0; display:flex; flex-direction:column; min-width:0; overflow:hidden;';
   rightPanel.appendChild(terminalAreaEl);
 
   // 顶部工具栏容器（标签栏 + 终端类型选择器）
@@ -218,6 +220,8 @@ async function init(): Promise<void> {
       // 递增文件夹使用次数并保存
       usageCount[folderPath] = (usageCount[folderPath] || 0) + 1;
       directoryTree.setUsageCount(usageCount);
+      // 实时刷新目录树排序（无需重启应用）
+      directoryTree.refreshSort();
       window.api.updateConfig({ folderUsageCount: usageCount }).catch(() => {});
     }
   });

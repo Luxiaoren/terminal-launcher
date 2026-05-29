@@ -5,6 +5,7 @@
  */
 
 import type { FolderEntry } from '../../shared/types';
+import { compareFolderNames } from '../../shared/sort-utils';
 
 /** 声明 window.api 类型 */
 declare const window: Window & {
@@ -27,6 +28,9 @@ interface TreeNodeState {
 /** 加载超时阈值（毫秒） */
 const LOADING_TIMEOUT_MS = 500;
 
+/** 单击/双击区分延迟（毫秒）：单击在此延迟后若无第二次点击才执行展开/折叠 */
+const CLICK_DELAY_MS = 250;
+
 /**
  * DirectoryTree 目录树组件
  * 管理树形 DOM 结构，处理展开/折叠、加载、错误等状态
@@ -46,6 +50,8 @@ export class DirectoryTree {
   private doubleClickCallback: ((path: string) => void) | null = null;
   /** 文件夹使用次数（用于排序） */
   private usageCount: Record<string, number> = {};
+  /** 单击延迟定时器（用于区分单击与双击） */
+  private clickTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(parentElement: HTMLElement) {
     // 创建容器结构
@@ -133,6 +139,39 @@ export class DirectoryTree {
    */
   onFolderDoubleClick(callback: (path: string) => void): void {
     this.doubleClickCallback = callback;
+  }
+
+  /**
+   * 按最新的使用次数重新排序目录树并刷新视图
+   * 保留各节点已展开/已加载的状态，不重新读取磁盘
+   */
+  refreshSort(): void {
+    this.sortNodes(this.rootNodes);
+    // 重新渲染整棵树（节点状态中保留了 expanded/loaded/children，重渲染会还原展开状态）
+    this.contentEl.innerHTML = '';
+    this.renderNodes(this.rootNodes, this.contentEl);
+  }
+
+  /**
+   * 递归地按使用次数与名称对节点列表排序
+   * 排序规则与主进程 readSubfolders 保持一致：
+   * 优先按使用次数降序，次数相同按 compareFolderNames 字典序
+   */
+  private sortNodes(nodes: TreeNodeState[]): void {
+    nodes.sort((a, b) => {
+      const countA = this.usageCount[a.entry.path] || 0;
+      const countB = this.usageCount[b.entry.path] || 0;
+      if (countA !== countB) {
+        return countB - countA;
+      }
+      return compareFolderNames(a.entry.name, b.entry.name);
+    });
+    // 递归排序已加载的子节点
+    for (const node of nodes) {
+      if (node.children.length > 0) {
+        this.sortNodes(node.children);
+      }
+    }
   }
 
   /**
@@ -225,10 +264,31 @@ export class DirectoryTree {
     label.title = nodeState.entry.path;
     nodeRow.appendChild(label);
 
-    // 双击事件：触发打开终端
+    // 单击行：展开/折叠（叶节点无操作）；双击行：打开终端
+    // 用延迟定时器区分单击与双击，避免双击时误触发展开
     if (nodeState.entry.accessible) {
+      nodeRow.addEventListener('click', (e) => {
+        // 箭头自身的点击已 stopPropagation，这里只处理行其余区域
+        e.stopPropagation();
+        if (this.clickTimer) {
+          clearTimeout(this.clickTimer);
+        }
+        this.clickTimer = setTimeout(() => {
+          this.clickTimer = null;
+          // 仅当有子文件夹时才展开/折叠
+          if (nodeState.entry.hasChildren) {
+            this.handleArrowClick(nodeState);
+          }
+        }, CLICK_DELAY_MS);
+      });
+
       nodeRow.addEventListener('dblclick', (e) => {
         e.stopPropagation();
+        // 取消待执行的单击展开，避免双击同时触发展开
+        if (this.clickTimer) {
+          clearTimeout(this.clickTimer);
+          this.clickTimer = null;
+        }
         if (this.doubleClickCallback) {
           this.doubleClickCallback(nodeState.entry.path);
         }

@@ -19,6 +19,8 @@ declare const window: Window & {
     closeTerminal(terminalId: string): Promise<void>;
     onTerminalData(terminalId: string, callback: (data: string) => void): void;
     onTerminalExit(terminalId: string, callback: (code: number) => void): void;
+    offTerminalData(terminalId: string): void;
+    offTerminalExit(terminalId: string): void;
     checkAccess(dirPath: string): Promise<{ exists: boolean; readable: boolean; writable: boolean }>;
   };
 };
@@ -69,6 +71,8 @@ export class TerminalPanel {
   private tabIdCounter = 0;
   /** resize 防抖定时器 */
   private resizeTimer: ReturnType<typeof setTimeout> | null = null;
+  /** 窗口 resize 监听器（保留引用以便组件销毁时移除） */
+  private resizeHandler: () => void;
 
   constructor(parentElement: HTMLElement) {
     // 创建容器结构
@@ -88,7 +92,8 @@ export class TerminalPanel {
     parentElement.appendChild(this.container);
 
     // 监听窗口 resize 事件，自适应终端尺寸
-    window.addEventListener('resize', () => this.handleResize());
+    this.resizeHandler = () => this.handleResize();
+    window.addEventListener('resize', this.resizeHandler);
   }
 
   /**
@@ -252,6 +257,10 @@ export class TerminalPanel {
     const instance = this.instances.get(tabId);
     if (!instance) return;
 
+    // 先移除该终端的 IPC 监听器，避免内存泄漏
+    window.api.offTerminalData(instance.id);
+    window.api.offTerminalExit(instance.id);
+
     // 关闭 pty 进程
     try {
       await window.api.closeTerminal(instance.id);
@@ -352,6 +361,24 @@ export class TerminalPanel {
     }
   }
 
+  /**
+   * 销毁终端面板，关闭所有标签并移除全局监听器
+   */
+  async destroy(): Promise<void> {
+    // 关闭所有标签（会清理 IPC 监听器和 xterm 实例）
+    const tabIds = Array.from(this.instances.keys());
+    for (const tabId of tabIds) {
+      await this.closeTab(tabId);
+    }
+    // 清除 resize 防抖定时器
+    if (this.resizeTimer) {
+      clearTimeout(this.resizeTimer);
+      this.resizeTimer = null;
+    }
+    // 移除窗口 resize 监听器
+    window.removeEventListener('resize', this.resizeHandler);
+  }
+
   // ===== 私有方法 =====
 
   /**
@@ -442,6 +469,9 @@ export class TerminalPanel {
     instance.exitCode = null;
 
     // 关闭旧的 pty（如果还在）
+    // 先移除旧 terminalId 的 IPC 监听器，避免内存泄漏
+    window.api.offTerminalData(instance.id);
+    window.api.offTerminalExit(instance.id);
     try {
       await window.api.closeTerminal(instance.id);
     } catch {

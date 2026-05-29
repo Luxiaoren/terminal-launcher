@@ -2,7 +2,7 @@
 
 ## Overview
 
-Terminal Launcher 是一个轻量级 Windows 桌面终端管理工具，采用 Electron + xterm.js + node-pty 技术栈构建。应用提供类似 VS Code 的启动体验，用户可通过欢迎页选择工作文件夹，在左侧目录树中浏览子文件夹结构，并通过双击文件夹在右侧面板中打开对应路径的内嵌终端会话。
+Foldim 是一个轻量级 Windows 桌面终端管理工具，采用 Electron + xterm.js + node-pty 技术栈构建。应用提供类似 VS Code 的启动体验，用户可通过欢迎页选择工作文件夹，在左侧目录树中浏览子文件夹结构，并通过双击文件夹在右侧面板中打开对应路径的内嵌终端会话。
 
 ### 核心技术选型
 
@@ -570,16 +570,16 @@ window.onerror = (message, source, lineno, colno, error) => {
 
 使用 fast-check 库，每个属性测试最少运行 100 次迭代：
 
-- **Feature: terminal-launcher, Property 1**: 最近文件夹列表排序与截断
-- **Feature: terminal-launcher, Property 2**: 有效文件夹设置 Workspace_Folder
-- **Feature: terminal-launcher, Property 5**: 目录树仅显示文件夹
-- **Feature: terminal-launcher, Property 6**: 目录树排序规则
-- **Feature: terminal-launcher, Property 10**: 终端数量上限不变量
-- **Feature: terminal-launcher, Property 12**: 异常退出码显示
-- **Feature: terminal-launcher, Property 16**: 配置持久化往返
-- **Feature: terminal-launcher, Property 18**: 分隔条最小宽度约束
-- **Feature: terminal-launcher, Property 19**: 超出屏幕范围回退默认值
-- **Feature: terminal-launcher, Property 20**: 面板切换往返
+- **Feature: foldim, Property 1**: 最近文件夹列表排序与截断
+- **Feature: foldim, Property 2**: 有效文件夹设置 Workspace_Folder
+- **Feature: foldim, Property 5**: 目录树仅显示文件夹
+- **Feature: foldim, Property 6**: 目录树排序规则
+- **Feature: foldim, Property 10**: 终端数量上限不变量
+- **Feature: foldim, Property 12**: 异常退出码显示
+- **Feature: foldim, Property 16**: 配置持久化往返
+- **Feature: foldim, Property 18**: 分隔条最小宽度约束
+- **Feature: foldim, Property 19**: 超出屏幕范围回退默认值
+- **Feature: foldim, Property 20**: 面板切换往返
 
 #### 集成测试
 

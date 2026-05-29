@@ -22,16 +22,30 @@ declare const window: Window & { api: any };
  */
 export class ScriptPanel {
   private container: HTMLElement;
+  private dividerEl: HTMLElement;
   private scriptListEl: HTMLElement;
   private nodeInfoEl: HTMLElement;
   private options: ScriptPanelOptions;
+  /** 当前面板宽度（px） */
+  private panelWidth: number = 280;
+  /** 全局鼠标移动监听器（保留引用以便组件销毁时移除） */
+  private mouseMoveHandler: (e: MouseEvent) => void = () => {};
+  /** 全局鼠标释放监听器（保留引用以便组件销毁时移除） */
+  private mouseUpHandler: () => void = () => {};
 
   constructor(parentElement: HTMLElement, options: ScriptPanelOptions) {
     this.options = options;
 
+    // 创建左侧拖拽分隔条
+    this.dividerEl = document.createElement('div');
+    this.dividerEl.className = 'script-panel-divider-bar';
+    parentElement.appendChild(this.dividerEl);
+
     // 根容器
     this.container = document.createElement('div');
     this.container.className = 'script-panel';
+    this.container.style.width = `${this.panelWidth}px`;
+    this.container.style.minWidth = '180px';
 
     // ===== 上半部分：NPM 脚本 =====
     const scriptSection = document.createElement('div');
@@ -81,6 +95,9 @@ export class ScriptPanel {
     this.container.appendChild(nodeSection);
 
     parentElement.appendChild(this.container);
+
+    // 绑定分隔条拖拽事件，调整面板宽度
+    this.bindDragEvents(parentElement);
 
     // 加载 Node 版本信息
     this.loadNodeInfo();
@@ -226,9 +243,66 @@ export class ScriptPanel {
     }
   }
 
-  show(): void { this.container.style.display = 'flex'; }
-  hide(): void { this.container.style.display = 'none'; }
+  show(): void {
+    this.container.style.display = 'flex';
+    this.dividerEl.style.display = 'block';
+  }
+  hide(): void {
+    this.container.style.display = 'none';
+    this.dividerEl.style.display = 'none';
+  }
   isVisible(): boolean { return this.container.style.display !== 'none'; }
   getElement(): HTMLElement { return this.container; }
-  destroy(): void { this.container.parentElement?.removeChild(this.container); }
+  destroy(): void {
+    this.container.parentElement?.removeChild(this.container);
+    this.dividerEl.parentElement?.removeChild(this.dividerEl);
+    // 移除全局监听器，避免内存泄漏
+    document.removeEventListener('mousemove', this.mouseMoveHandler);
+    document.removeEventListener('mouseup', this.mouseUpHandler);
+  }
+
+  /**
+   * 绑定分隔条拖拽事件，调整面板宽度
+   */
+  private bindDragEvents(parentElement: HTMLElement): void {
+    let isDragging = false;
+    let startX = 0;
+    let startWidth = 0;
+
+    this.dividerEl.addEventListener('mousedown', (e: MouseEvent) => {
+      e.preventDefault();
+      isDragging = true;
+      startX = e.clientX;
+      startWidth = this.panelWidth;
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    });
+
+    this.mouseMoveHandler = (e: MouseEvent) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      // divider 在面板左侧：向左拖动鼠标 → 面板变宽
+      const delta = startX - e.clientX;
+      let newWidth = startWidth + delta;
+      // 限制最小/最大宽度
+      const parentRect = parentElement.getBoundingClientRect();
+      const maxWidth = Math.max(180, parentRect.width - 200); // 至少给终端留 200px
+      newWidth = Math.max(180, Math.min(maxWidth, newWidth));
+      this.panelWidth = newWidth;
+      this.container.style.width = `${newWidth}px`;
+      this.container.style.flexShrink = '0';
+      // 触发布局变化回调，让终端重新适配尺寸
+      window.dispatchEvent(new Event('resize'));
+    };
+
+    this.mouseUpHandler = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.addEventListener('mousemove', this.mouseMoveHandler);
+    document.addEventListener('mouseup', this.mouseUpHandler);
+  }
 }

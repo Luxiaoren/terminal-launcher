@@ -2,11 +2,11 @@
 
 ## Introduction
 
-Terminal Launcher 是一个轻量级 Windows 桌面工具，基于 Electron + xterm.js + node-pty 技术栈构建。用户可以通过类似 VS Code 的启动页选择文件夹，在左侧目录树中浏览子文件夹，并点击文件夹在应用内嵌终端中打开对应路径的终端会话。支持多种终端类型（cmd、PowerShell、Git Bash、Windows Terminal），目标为免安装/portable 友好的轻量级应用。
+Foldim 是一个轻量级 Windows 桌面工具，基于 Electron + xterm.js + node-pty 技术栈构建。用户可以通过类似 VS Code 的启动页选择文件夹，在左侧目录树中浏览子文件夹，并点击文件夹在应用内嵌终端中打开对应路径的终端会话。支持多种终端类型（cmd、PowerShell、Git Bash、Windows Terminal），目标为免安装/portable 友好的轻量级应用。
 
 ## Glossary
 
-- **Application**：Terminal Launcher 桌面应用程序主体
+- **Application**：Foldim 桌面应用程序主体
 - **Welcome_Page**：应用启动时显示的欢迎页面，提供打开文件夹的入口
 - **Directory_Tree**：左侧面板中展示当前已打开文件夹下所有子文件夹的树形结构
 - **Embedded_Terminal**：应用内嵌的终端面板，基于 xterm.js 渲染，通过 node-pty 与系统终端进程通信
