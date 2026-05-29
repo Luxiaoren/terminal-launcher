@@ -10,7 +10,10 @@
     "start": "electron-vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "pack": "electron-builder --win zip"
+    "pack": "electron-builder",
+    "pack:win": "electron-builder --win zip",
+    "pack:mac": "electron-builder --mac dmg zip",
+    "pack:dir": "electron-builder --dir"
   },
   "author": "",
   "license": "MIT",
@@ -43,6 +46,20 @@
         {
           "target": "zip",
           "arch": ["x64"]
+        }
+      ]
+    },
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "public.app-category.developer-tools",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
         }
       ]
     },
